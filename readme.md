@@ -13,6 +13,6 @@ Installation
 - Click on the "Demo Installer" link to get you to the installer module.
 - Click on the "Install" button.
 
-You should now have all 5 demo modules installed and there should be no sign of the installer module. If the director
+You should now have all 5 demo modules installed and there should be no sign of the installer module. If the directory
 was not writeable you will get an installation error. To correct: make the DemoProject folder writeable and re-run the
 installer.
