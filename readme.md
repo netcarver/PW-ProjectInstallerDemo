@@ -8,8 +8,8 @@ Installs a set of 5 do-nothing modules.
 Installation
 ------------
 
-- Copy this directory into your site/modules subfolder.
-- Make sure this directory is write-enabled. If the directory is not writeable, the demo modules install will fail.
+- Copy the "DemoProject" directory into your site/modules subfolder.
+- Make sure the copied directory is write-enabled. If the directory is not writeable, the demo modules install will fail.
 - In the modules UI "Check for new modules."
 - Click on the "DemoInstaller" link to get you to the installer module.
 - Click on the "Install" button.
