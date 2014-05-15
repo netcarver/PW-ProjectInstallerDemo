@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * Demo Installer module
+ * =====================
+ *
+ * A PW module to install a set of demo modules that do -- nothing!
+ *
+ *
+ * Copyright
+ * ---------
+ *
+ * Copyright 2014 Stephen Dickinson, QBox.
+ *
+ *
+ * License
+ * -------
+ *
+ * Released under the GPLv2 license. See the LICENSE file for more details.
+ */
+
+class DemoInstaller extends WireData implements Module
+{
+    public static function getModuleInfo()
+    {
+        return array(
+            'title'   => 'Demo Installer',
+            'version' => 100,
+            'summary' => 'Installs a set of modules and then removes itself.',
+            'author'  => 'Stephen Dickinson, QBox.'
+        );
+    }
+
+
+    /**
+     * This method is needed to satisfy the 'implements module' clause. It's not used.
+     */
+    public function init()
+    {
+    }
+
+
+    /**
+     * Installs whatever invisible sibling modules it finds in its own directory.
+     *
+     * Each sibling ends with Xyz.module.php and is renamed to Xyz.module to allow PW to see and install it.
+     */
+    public function install()
+    {
+        // Rename ourself to .module.done.php for later deletion
+        $current = __FILE__;
+        $dir     = dirname($current);
+        $tmpfile = "$current.done.php";
+        if (!rename($current, $tmpfile)) {
+            throw new \Exception("Could not rename installer file. Directory must writable!");
+        }
+
+        $modules  = $this->wire('modules');
+        $database = $this->wire('database');
+        $globpattern = $dir . "/*.module.php";
+
+        // rename hidden module files so PW sees them as normal module files...
+        $files = glob($globpattern);
+        foreach ($files as $f) {
+            $newf = substr($f, 0, -4);
+            rename($f, $newf);
+        }
+
+        // Force PW to rebuild the cache of module files or installation of our newly renamed modules will fail.
+        $modules->resetCache();
+
+        // Now actually install them...
+        foreach ($files as $f) {
+            $class = substr(basename($f), 0, -11);
+            $this->message("Installing: " . $class);
+            $modules->install($class);
+        }
+
+        // Remove self from the modules DB table...
+        $class = __CLASS__;
+        $this->message("Removing installer.");
+        $query = $database->prepare('DELETE FROM modules WHERE class=:class LIMIT 1');
+        $query->bindValue(":class", $class, PDO::PARAM_STR);
+        $query->execute();
+
+        // Delete our own file
+        if (!unlink($tmpfile)) {
+            // if deletion failed, rename ourself back to original so user can retry if needed.
+            rename($tmpfile, $current);
+        }
+    }
+}
