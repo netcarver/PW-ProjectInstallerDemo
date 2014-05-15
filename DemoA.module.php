@@ -1,13 +1,13 @@
 <?php
 
-class ThingyA extends WireData implements Module
+class DemoA extends WireData implements Module
 {
     public static function getModuleInfo()
 	{
 		return array(
-			'title'   => 'Thingy A',
+			'title'   => 'Demo A',
 			'version' => 1,
-			'summary' => 'Thingy A',
+			'summary' => 'Demo A',
 		);
 	}
 
